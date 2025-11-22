@@ -93,7 +93,7 @@ static bool[,] NextGeneration(bool[,] CurrentGeneration, int MaxX, int MaxY)
                 }                
             }
             Console.WriteLine($"X={x}, y={y}. Neighbours = {NeighboursAlive}. Alive: {CurrentGeneration[x,y]}");
-            if (NeighboursAlive==3||NeighboursAlive==2&&CurrentGeneration[x,y])
+            if (NeighboursAlive==3||NeighboursAlive==2&&CurrentGeneration[x,y]) //Har sett själva (3 grannar eller 2 och levande) online, men kodade själv. Source: https://youtu.be/tPr5b_06GF4?t=390
             {
                 NextGeneration[x,y]=true;
             }
