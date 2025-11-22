@@ -6,8 +6,9 @@ int MaxX = 20;
 int MaxY = 20;
 
 bool[,] IsAlive = new bool[MaxX*25, MaxY*25];
+bool RunningLoop = true;
 
-Raylib.InitWindow(MaxX*25,MaxY*25,"Game of Life");
+Raylib.InitWindow(MaxX*25,MaxY*25+50,"Game of Life");
 Raylib.SetTargetFPS(60);
 
 int FrameCount = 0;
@@ -32,7 +33,7 @@ while (!Raylib.WindowShouldClose())
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Black);
 
-    for (int y=0;y<MaxY;y++)
+    for (int y=0;y<MaxY;y++)//Draws the game
     { 
         for (int x = 0; x<MaxX; x++)
         {
@@ -42,15 +43,23 @@ while (!Raylib.WindowShouldClose())
             }
         }
     }
+    if (Raylib.IsKeyPressed(KeyboardKey.Tab))//The game automatically runs, toggleble with TAB
+    {
+        if (RunningLoop)
+        {
+            RunningLoop=false;
+        }
+        else
+        {    
+            RunningLoop=true;
+        }
 
-    // while(Raylib.GetKeyPressed()==0);
-    if (Raylib.IsKeyPressed(KeyboardKey.Space))
+    }
+    if (Raylib.IsKeyPressed(KeyboardKey.Space)||FrameCount%30==0&&RunningLoop) //Runs the next generation
     {
         IsAlive=NextGeneration(IsAlive,MaxX,MaxY);
     }
-
-
-    if (Raylib.IsMouseButtonPressed(MouseButton.Left)&&Raylib.GetMouseX()/25<MaxX&&Raylib.GetMouseX()>0&&Raylib.GetMouseY()/25<MaxY&&Raylib.GetMouseY()>0)
+    if (Raylib.IsMouseButtonPressed(MouseButton.Left)&&Raylib.GetMouseX()/25<MaxX&&Raylib.GetMouseX()>0&&Raylib.GetMouseY()/25<MaxY&&Raylib.GetMouseY()>0)//The user can click in order to toggle the square the mouse is on
     {
         if (IsAlive[Raylib.GetMouseX()/25, Raylib.GetMouseY()/25]==false)
         {
@@ -61,17 +70,8 @@ while (!Raylib.WindowShouldClose())
             IsAlive[Raylib.GetMouseX()/25, Raylib.GetMouseY()/25]=false;
         }
     }
-    
-
-
-    
-
     Raylib.EndDrawing();
 }
-
-
-
-
 
 static bool[,] NextGeneration(bool[,] CurrentGeneration, int MaxX, int MaxY)
 {
@@ -92,7 +92,6 @@ static bool[,] NextGeneration(bool[,] CurrentGeneration, int MaxX, int MaxY)
                     }
                 }                
             }
-            Console.WriteLine($"X={x}, y={y}. Neighbours = {NeighboursAlive}. Alive: {CurrentGeneration[x,y]}");
             if (NeighboursAlive==3||NeighboursAlive==2&&CurrentGeneration[x,y]) //Har sett själva (3 grannar eller 2 och levande) online, men kodade själv. Source: https://youtu.be/tPr5b_06GF4?t=390
             {
                 NextGeneration[x,y]=true;
