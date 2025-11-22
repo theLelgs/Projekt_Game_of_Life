@@ -75,9 +75,6 @@ while (!Raylib.WindowShouldClose())
     Raylib.DrawText("Press TAB to toggle generations", 10, MaxY*25+20, 20, Color.Black);
     Raylib.DrawText("Hold Left Shift to speed up generations", 10, MaxY*25+40, 20, Color.Black);
 
-
-
-
     Raylib.EndDrawing();
 }
 
