@@ -8,7 +8,7 @@ int MaxY = 20;
 bool[,] IsAlive = new bool[MaxX*25, MaxY*25];
 bool RunningLoop = true;
 
-Raylib.InitWindow(MaxX*25,MaxY*25+50,"Game of Life");
+Raylib.InitWindow(MaxX*25,MaxY*25+60,"Game of Life");
 Raylib.SetTargetFPS(60);
 
 int FrameCount = 0;
@@ -55,7 +55,7 @@ while (!Raylib.WindowShouldClose())
         }
 
     }
-    if (Raylib.IsKeyPressed(KeyboardKey.Space)||FrameCount%30==0&&RunningLoop) //Runs the next generation
+    if (Raylib.IsKeyPressed(KeyboardKey.Space)||FrameCount%30==0&&RunningLoop||FrameCount%5==0&&RunningLoop&&Raylib.IsKeyDown(KeyboardKey.LeftShift)) //Runs the next generation
     {
         IsAlive=NextGeneration(IsAlive,MaxX,MaxY);
     }
@@ -70,6 +70,14 @@ while (!Raylib.WindowShouldClose())
             IsAlive[Raylib.GetMouseX()/25, Raylib.GetMouseY()/25]=false;
         }
     }
+    Raylib.DrawRectangle(0,25*MaxY,MaxX*25,60,Color.LightGray);
+    Raylib.DrawText("Press Space to go to the next generation", 10, MaxY*25, 20, Color.Black);
+    Raylib.DrawText("Press TAB to toggle generations", 10, MaxY*25+20, 20, Color.Black);
+    Raylib.DrawText("Hold Left Shift to speed up generations", 10, MaxY*25+40, 20, Color.Black);
+
+
+
+
     Raylib.EndDrawing();
 }
 
