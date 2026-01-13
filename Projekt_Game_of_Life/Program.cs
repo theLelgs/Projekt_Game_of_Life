@@ -1,38 +1,54 @@
 ﻿using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
 using Raylib_cs;
 
 int MaxX = 20;
 int MaxY = 20;
 
-bool[,] IsAlive = new bool[MaxX*25, MaxY*25];
+bool[,] IsAlive = new bool[MaxX, MaxY];
 bool RunningLoop = true;
 
 Raylib.InitWindow(MaxX*25,MaxY*25+60,"Game of Life");
 Raylib.SetTargetFPS(60);
 
+Vector2 LastMousePos=Raylib.GetMousePosition();
 int FrameCount = 0;
 
-
-for (int y=0;y<MaxY;y++)
-{ 
-    for (int x = 0; x<MaxX; x++)
-    {
-        if (Random.Shared.Next(2)==0)
+if(!File.Exists("Save.txt"))
+{
+    for (int y=0;y<MaxY;y++)
+    { 
+        for (int x = 0; x<MaxX; x++)
         {
-            IsAlive[x,y]=true;
+            if (Random.Shared.Next(2)==0)
+            {
+                IsAlive[x,y]=true;
+            }
         }
     }
 }
-
-
+else
+{
+    StreamReader sr = new("Save.txt");
+    for (int y=0;y<MaxY;y++)
+    { 
+        string line = sr.ReadLine();
+        for (int x = 0; x<MaxX; x++)
+        {
+            if (line[x].ToString() == "o")
+            {
+                IsAlive[x,y]=true;
+            }
+        }
+    }
+    sr.Close();
+}
 
 while (!Raylib.WindowShouldClose())
 {
     FrameCount++;
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Black);
-
+    
     for (int y=0;y<MaxY;y++)//Draws the game
     { 
         for (int x = 0; x<MaxX; x++)
@@ -59,7 +75,7 @@ while (!Raylib.WindowShouldClose())
     {
         IsAlive=NextGeneration(IsAlive,MaxX,MaxY);
     }
-    if (Raylib.IsMouseButtonPressed(MouseButton.Left)&&Raylib.GetMouseX()/25<MaxX&&Raylib.GetMouseX()>0&&Raylib.GetMouseY()/25<MaxY&&Raylib.GetMouseY()>0)//The user can click in order to toggle the square the mouse is on
+    if (Raylib.IsMouseButtonDown(MouseButton.Left)&&LastMousePos!=Vector2.Create(Raylib.GetMouseX() / 25, Raylib.GetMouseY()/25)&&Raylib.GetMouseX()/25<MaxX&&Raylib.GetMouseX()>0&&Raylib.GetMouseY()/25<MaxY&&Raylib.GetMouseY()>0)//The user can click in order to toggle the square the mouse is on, hold down to toggle multiple squares
     {
         if (IsAlive[Raylib.GetMouseX()/25, Raylib.GetMouseY()/25]==false)
         {
@@ -69,11 +85,39 @@ while (!Raylib.WindowShouldClose())
         {
             IsAlive[Raylib.GetMouseX()/25, Raylib.GetMouseY()/25]=false;
         }
+        LastMousePos=Vector2.Create(Raylib.GetMouseX() / 25, Raylib.GetMouseY()/25); //Update what the last square was so we don't toggle it repeatedly
+    }
+    if(!Raylib.IsMouseButtonDown(MouseButton.Left))
+    {
+        LastMousePos=Vector2.Create(-5); // Set LastMousePos off-screen, otherwise you can't re-hold on the same square you ended on.
+    }
+    if(Raylib.IsKeyPressed(KeyboardKey.Enter))
+    {
+        StreamWriter Sw = new("Save.txt");
+        for (int y = 0; y < MaxY; y++)
+        {
+            string TempString = null;
+            for (int x = 0; x < MaxX; x++)
+            {
+                if (IsAlive[x,y])
+                {
+                    TempString+="o";
+                }
+                else
+                {
+                    TempString+=" ";
+                }
+            }
+            Sw.WriteLine(TempString);
+        }
+        Sw.Close();
     }
     Raylib.DrawRectangle(0,25*MaxY,MaxX*25,60,Color.LightGray);
     Raylib.DrawText("Press Space to go to the next generation", 10, MaxY*25, 20, Color.Black);
     Raylib.DrawText("Press TAB to toggle generations", 10, MaxY*25+20, 20, Color.Black);
     Raylib.DrawText("Hold Left Shift to speed up generations", 10, MaxY*25+40, 20, Color.Black);
+
+
 
     Raylib.EndDrawing();
 }
